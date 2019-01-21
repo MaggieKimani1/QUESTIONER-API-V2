@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_restful import Api
 # from app.api.v1.views.meetups import AllMeetupsApi, SingleMeetupApi
 # from app.api.v1.views.questions import AllQuestionsApi, SingleQuestion
-# from app.api.v1.views.users import AllUsersApi
+from app.api.v2.views.users import AllUsersApi, SingleUserApi
 
 
 """create variable called api_v1 that defines the blueprint and registers it in the application factory"""
@@ -14,4 +14,5 @@ api_v2 = Api(app_v2, catch_all_404s=True)
 #                     '/meetups/<id>/rsvps')
 # api_v1.add_resource(AllQuestionsApi, '/meetups/<id>/questions')
 # api_v1.add_resource(SingleQuestion, '/questions/<question_id>')
-# api_v1.add_resource(AllUsersApi, '/auth')
+api_v2.add_resource(AllUsersApi, '/auth')
+api_v2.add_resource(SingleUserApi, '/auth/login')
