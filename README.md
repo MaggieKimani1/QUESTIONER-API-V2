@@ -27,7 +27,7 @@ Questioner is a platform that allows users to crowd source ideas for meetups
 ### Getting started
 
 Clone this repository
-[https://github.com/MaggieKimani1/QUESTIONER-API-V2.git]
+[(https://github.com/MaggieKimani1/QUESTIONER-API-V2.git)]
 
 Navigate to the cloned repository
 `cd Questioner-API-v2`

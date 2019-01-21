@@ -2,6 +2,7 @@ import os
 import psycopg2
 from flask import Flask
 from instance.config import app_config
+from werkzeug.security import generate_password_hash
 
 
 environment = os.environ["APP_SETTINGS"]
@@ -21,9 +22,9 @@ class Database(object):
 
     def createTables(self):
         """This method creates all tables if they dont exist
-                        param1:connection
-                        param2:queries
-                        param3:cursor
+                                        param1:connection
+                                        param2:queries
+                                        param3:cursor
         """
 
         conn = self.connection()
@@ -33,9 +34,9 @@ class Database(object):
 		id Serial PRIMARY KEY NOT NULL,
 		firstname varchar(40) NOT NULL,
 		lastname varchar(40) NOT NULL,
-		email varchar(100) NOT NULL,
-		othername varchar(40) NOT NULL,
-		phoneNumber int NOT NULL,
+		email varchar(100) UNIQUE NOT NULL,
+		password varchar(500) NOT NULL,
+		phoneNumber varchar(20) NOT NULL,
 		username varchar(100)  NOT NULL,
 		registered date NOT NULL,
 		isAdmin boolean NOT NULL
@@ -44,7 +45,7 @@ class Database(object):
         question_query = """CREATE TABLE if not EXISTS questions(
 		question_id Serial PRIMARY KEY NOT NULL,
 		createdOn date NOT NULL,
-		createdBy int REFERENCES users(user_id) on DELETE CASCADE,
+		createdBy int REFERENCES users(id) on DELETE CASCADE,
 		meetup varchar(100)  NOT NULL,
 		title varchar(50) NOT NULL,
 		body varchar(250) NOT NULL,
@@ -63,7 +64,7 @@ class Database(object):
 
         rsvp_query = """CREATE TABLE if not EXISTS rsvps(
 		rsvp_id Serial PRIMARY KEY NOT NULL,
-		user_id int REFERENCES users(user_id) on DELETE CASCADE,
+		user_id int REFERENCES users(id) on DELETE CASCADE,
 		meetup_id int REFERENCES meetups(meetup_id) on DELETE CASCADE,
 		response varchar(50) NOT NULL
 		)"""
@@ -72,5 +73,35 @@ class Database(object):
         for query in queries:
             cur.execute(query)
 
+        conn.commit()
+        conn.close()
+
+        # def create_admin(self):
+        #     """This method creates the default users
+        # 	   :param1:names.
+        #        :param2:email.
+        #        :param3:role.
+        #        :param4:password.
+        #     """
+        #     conn = self.connection()
+        #     cur = conn.cursor()
+        #     if not self.select_one_user("admin@quickwear.com"):
+
+        #         password = generate_password_hash('@Admin1')
+        #         cur.execute("INSERT INTO users(email,names,password,role) VALUES(%s,%s,%s,%s)",
+        #                     ('admin@quickwear.com', 'Sammy Njau', password, 'admin'))
+        #         conn.commit()
+        #         conn.close()
+    def drop_tables(self):
+        """Used to remove tables from database"""
+        conn = self.connection()
+        cur = conn.cursor()
+        sql = [" DROP TABLE IF EXISTS questions CASCADE",
+               " DROP TABLE IF EXISTS users CASCADE",
+               " DROP TABLE IF EXISTS meetups CASCADE",
+               " DROP TABLE IF EXISTS rsvps  CASCADE"
+               ]
+        for string in sql:
+            cur.execute(string)
         conn.commit()
         conn.close()
