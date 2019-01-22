@@ -64,6 +64,11 @@ class TestBase(unittest.TestCase):
             "registered": datetime.datetime.now().strftime("%y-%m-%d-%H-%M"),
             "isAdmin": False
         }
+        self.login_user = {
+            "email": "Maggiekim42@gmail.com",
+            "password": "Nyambura"
+
+        }
 
     def tearDown(self):
         '''Method to clear all tables before another test is undertaken'''
