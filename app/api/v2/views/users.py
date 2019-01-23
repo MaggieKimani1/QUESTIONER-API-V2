@@ -4,9 +4,12 @@ from app.api.v2.models.usermodel import User
 from flask_jwt_extended import create_access_token, jwt_required
 from flask_expects_json import expects_json
 from app.api.v2.utils.json_schema import signup_schema, login_schema
+from app.api.v2.utils.validators import Validations
+
+validator = Validations()
 
 
-class AllUsersApi(Resource):
+class Registration(Resource):
     '''Endpoint for all users functionality'''
     @expects_json(signup_schema)
     def post(self):
@@ -19,9 +22,13 @@ class AllUsersApi(Resource):
         lastname = data["lastname"]
         password = data["password"]
         username = data["username"]
-        email = data["email"]
+        email = data["email"].lower()
         phoneNumber = data["phoneNumber"]
 
+        if not validator.validate_email(email):
+            return {"message": "Please enter a valid email"}
+        if not validator.validate_password(password):
+            return{"message": "Please enter a valid password"}
         if not firstname or firstname.isspace():
             return {"message": "firstname must be provided", "status": 400}, 400
         if not lastname or lastname.isspace():
@@ -37,13 +44,15 @@ class AllUsersApi(Resource):
 
         user1 = User(firstname, lastname, password,
                      email, phoneNumber, username)
+        if user1.get_user_by_email():
+            return {"message": "Email already exists"}
         user1.create_account()
         added_user = {"firstname": firstname, "lastname": lastname,
                       "email": email, "phoneNumber": phoneNumber, "username": username}
         return{"status": 201, "data": added_user, "message": "user created"}, 201
 
 
-class SingleUserApi(Resource):
+class Login(Resource):
     @expects_json(login_schema)
     def post(self):
         """This method posts user data for a login"""
@@ -52,8 +61,8 @@ class SingleUserApi(Resource):
 
         if not data:
             return {'message': 'please enter data to login'}
-        email = data.get('email')
-        password = data.get('password')
+        email = data["email"]
+        password = data["password"]
 
         if not email or email.isspace():
             return {"message": "email must be provided", "status": 400}, 400
@@ -64,5 +73,6 @@ class SingleUserApi(Resource):
         if not user.verify_user():
             return ({"message": "wrong email or password", "status": 401}), 401
         logged_user = user.verify_user()
+
         token = create_access_token(identity=logged_user["email"])
-        return {"message": "{} successfully logged in".format(logged_user['username']), "token": token, "status": 201}, 201
+        return {"message": "{} successfully logged in".format(logged_user["username"]), "token": token, "status": 201}, 201

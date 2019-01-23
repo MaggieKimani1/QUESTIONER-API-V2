@@ -69,7 +69,14 @@ class Database(object):
 		response varchar(50) NOT NULL
 		)"""
 
-        queries = [user_query, question_query, meetup_query, rsvp_query]
+        fix = """CREATE EXTENSION IF NOT EXISTS citext;"""
+
+        alteration = """ALTER TABLE users ALTER COLUMN username TYPE citext;"""
+
+        email_alteration = """ALTER TABLE users ALTER COLUMN email TYPE citext;"""
+
+        queries = [user_query, question_query,
+                   meetup_query, rsvp_query, fix, alteration, email_alteration]
         for query in queries:
             cur.execute(query)
 

@@ -7,7 +7,7 @@ from app.api.v2.utils.json_schema import meetup_schema
 meetup = Meetups()
 
 
-class AllMeetupsApi(Resource):
+class MeetupsEndpoints(Resource):
     """Endpoint for all meetups functionality"""
 
     @expects_json(meetup_schema)
@@ -50,7 +50,7 @@ class AllMeetupsApi(Resource):
         return {"message": "No meetup found", "status": 404}, 404
 
 
-class SingleMeetupApi(Resource):
+class MeetupEndpoint(Resource):
     '''Endpoint for single meetup functionality'''
 
     def get(self, meetup_id):
