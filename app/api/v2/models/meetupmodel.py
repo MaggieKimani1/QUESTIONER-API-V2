@@ -43,3 +43,10 @@ class Meetups():
         self.cursor.execute("SELECT * FROM meetups")
         result = self.cursor.fetchall()
         return result
+
+    def get_specific_meetup(self, meetup_id):
+        """Get meetup by meetup_id"""
+        self.cursor.execute(
+            "SELECT * FROM meetups WHERE meetup_id = %s", (meetup_id,))
+        result = self.cursor.fetchone()
+        return result
