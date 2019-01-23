@@ -37,3 +37,9 @@ class Meetups():
             return result
         except:
             pass
+
+    def get_all_meetups(self):
+        """Get all meetups"""
+        self.cursor.execute("SELECT * FROM meetups")
+        result = self.cursor.fetchall()
+        return result

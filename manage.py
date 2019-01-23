@@ -44,21 +44,21 @@ class Database(object):
 
         question_query = """CREATE TABLE if not EXISTS questions(
 		question_id Serial PRIMARY KEY NOT NULL,
-		createdOn date NOT NULL,
+		createdOn varchar NOT NULL,
 		createdBy int REFERENCES users(id) on DELETE CASCADE,
 		meetup varchar(100)  NOT NULL,
 		title varchar(50) NOT NULL,
 		body varchar(250) NOT NULL,
-		votes int NOT NULL
+		upvotes int NOT NULL,
+		downvotes int NOT NULL
 		)"""
 
         meetup_query = """CREATE TABLE if not EXISTS meetups(
 		meetup_id Serial PRIMARY KEY NOT NULL,
-		createdOn date NOT NULL,
+		createdOn varchar NOT NULL,
 		location varchar(50) NOT NULL,
-		images varchar(50) NOT NULL,
 		topic varchar(50) NOT NULL,
-		happeningOn date NOT NULL,
+		happeningOn varchar(300) NOT NULL,
 		tags varchar(50) NOT NULL
 		)"""
 

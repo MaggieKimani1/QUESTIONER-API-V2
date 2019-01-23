@@ -3,12 +3,15 @@ from manage import Database
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from psycopg2.extras import RealDictCursor
+import psycopg2
+from instance.config import app_config
+import os
+
+environment = os.environ["APP_SETTINGS"]
+DATABASE_URL = app_config[environment].DATABASE_URL
 
 
-db = Database()
-
-
-class User:
+class User():
     """User class defining methods related to the class"""
 
     def __init__(self, firstname=None, lastname=None, password=None, email=None, phoneNumber=None, username=None):
@@ -20,7 +23,7 @@ class User:
         self.username = username
         self.registered = datetime.datetime.now()
         self.isAdmin = False
-        self.connection = db.connection()
+        self.connection = psycopg2.connect(DATABASE_URL)
         self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
 
     def create_account(self):
@@ -30,7 +33,6 @@ class User:
         self.cursor.execute("INSERT INTO users (firstname, lastname, password, email, phoneNumber, username, registered, isAdmin) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
                             (self.firstname, self.lastname, password, self.email, self.phoneNumber, self.username, self.registered, self.isAdmin))
         self.connection.commit()
-        return "user created"
 
     def get_user_by_email(self):
         """This method gets one user from the system """
@@ -43,6 +45,9 @@ class User:
     def verify_user(self):
         """Verify login details"""
         self.cursor.execute(
-            "SELECT * FROM users where email =%s", (self.email,))
+            "SELECT password FROM users where email =%s", (self.email,))
         result = self.cursor.fetchone()
-        return result
+        if not result:
+            return "user not found"
+        valid_login = check_password_hash(result["password"], self.password)
+        return valid_login
