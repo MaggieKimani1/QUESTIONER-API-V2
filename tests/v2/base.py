@@ -13,7 +13,7 @@ class TestBase(unittest.TestCase):
 
     def setUp(self):
         """The setUp method is the method that initialize the variables to be used by the test methods"""
-        self.app = create_app(config_name="testing")
+        self.app = create_app(config_name="development")
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
@@ -34,7 +34,7 @@ class TestBase(unittest.TestCase):
         self.no_firstname_user = {
             "firstname": "",
             "lastname": "Kimani",
-            "email": "Maggiekim42@gmail.com",
+            "email": "Maggiekim@gmail.com",
             "password": "Nyambura",
             "confirm_password": "Nyambura",
             "phoneNumber": "0708818079",
@@ -45,7 +45,7 @@ class TestBase(unittest.TestCase):
         self.no_lastname_user = {
             "firstname": "Maggie",
             "lastname": "",
-            "email": "Maggiekim42@gmail.com",
+            "email": "Maggie42@gmail.com",
             "password": "Nyambura",
             "confirm_password": "Nyambura",
             "phoneNumber": "0708818079",

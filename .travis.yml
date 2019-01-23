@@ -10,11 +10,11 @@ services:
   - postgresql
 before_script:
   - export APP_SETTINGS=testing
-  - psql -c "CREATE USER maggie WITH PASSWORD '12345';"
-  - psql -c 'CREATE DATABASE test_questioner owner maggie;'
+  - psql -c "CREATE USER joshua_kodhe WITH PASSWORD '12345';"
+  - psql -c 'CREATE DATABASE test_questioner owner joshua_kodhe;'
 
 env:
-  - DATABASE_TEST_URL='postgresql://maggie:12345@localhost:5432/test_questioner'
+  - DATABASE_TEST_URL='postgresql://joshua_kodhe:12345@localhost:5432/test_questioner'
 script:
   - pytest
   - coverage run --source=app.api.v2 -m pytest && coverage report
