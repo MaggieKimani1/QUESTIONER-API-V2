@@ -48,3 +48,20 @@ class AllMeetupsApi(Resource):
         if meetups:
             return {"status": 200, "data": meetups, "message": "These are the available meetups"}, 200
         return {"message": "No meetup found", "status": 404}, 404
+
+
+class SingleMeetupApi(Resource):
+    '''Endpoint for single meetup functionality'''
+
+    def get(self, meetup_id):
+        '''Fetching a single meetup'''
+        try:
+            meetup_id = int(meetup_id)
+        except:
+            return{"message": "The meetup_id has to be an integer"}, 400
+
+        meetup_available = meetup.get_specific_meetup(meetup_id)
+
+        if meetup_available:
+            return {"status": 200, "data": meetup_available, "message": "meetup retrieved"}, 200
+        return {"message": "That meetup_id does not exist", "status": 404}, 404
