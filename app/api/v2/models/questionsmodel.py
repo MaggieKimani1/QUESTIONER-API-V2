@@ -18,7 +18,7 @@ class Questions():
         self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
 
     def create_question(self, createdBy=None, meetup=None, title=None, body=None, upvotes=None, downvotes=None):
-        """Model for posting a meetup"""
+        """Model for posting a question"""
         createdOn = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
 
         self.cursor.execute("INSERT INTO questions (createdOn, createdBy, meetup, title, body, upvotes, downvotes) VALUES(%s,%s,%s,%s,%s,%s,%s)",
@@ -29,7 +29,14 @@ class Questions():
         return {"message": "question added!"}
 
     def get_all_questions(self):
-        """Get all meetups"""
+        """Get all questions"""
         self.cursor.execute("SELECT * FROM questions")
         result = self.cursor.fetchall()
+        return result
+
+    def get_specific_question(self, question_id):
+        """Get specific question"""
+        self.cursor.execute(
+            "SELECT * FROM questions WHERE question_id=%s", (question_id,))
+        result = self.cursor.fetchone()
         return result

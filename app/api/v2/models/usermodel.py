@@ -30,6 +30,7 @@ class User():
         """ save a new user """
 
         password = generate_password_hash(self.password)
+
         self.cursor.execute("INSERT INTO users (firstname, lastname, password, email, phoneNumber, username, registered, isAdmin) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
                             (self.firstname, self.lastname, password, self.email, self.phoneNumber, self.username, self.registered, self.isAdmin))
         self.connection.commit()
@@ -45,9 +46,11 @@ class User():
     def verify_user(self):
         """Verify login details"""
         self.cursor.execute(
-            "SELECT password FROM users where email =%s", (self.email,))
+            "SELECT * FROM users where email =%s", (self.email,))
         result = self.cursor.fetchone()
         if not result:
-            return "user not found"
+            return "user not found", 404
         valid_login = check_password_hash(result["password"], self.password)
-        return valid_login
+        if not valid_login:
+            return "Wrong password", 404
+        return result

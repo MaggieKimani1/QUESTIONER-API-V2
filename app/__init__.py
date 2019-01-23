@@ -12,8 +12,8 @@ def create_app(config_name='development'):
     app = Flask(__name__)
 
     app.config.from_object(app_config[config_name])
-    app.config['JWT_SECRET_KEY'] = 'secret'
-    jwt = JWTManager(app)
+    app.config['JWT_SECRET_KEY'] = 'secrbjvbbnbcgbhxfbmet'
+    JWTManager(app)
 
     '''Import and register the blueprint from the factory'''
     from app.api.v2 import app_v2

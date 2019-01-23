@@ -9,7 +9,7 @@ meetup = Meetups()
 question = Questions()
 
 
-class AllQuestionsApi(Resource):
+class QuestionsEndpoint(Resource):
     '''Endpoint for all questions functionality'''
     @expects_json(question_schema)
     def post(self, meetup_id):
@@ -48,8 +48,12 @@ class AllQuestionsApi(Resource):
 
         return {"data": new_question, "status": 400, "message": "Question posted successfully"}, 201
 
+
+class QuestionEndpoint(Resource):
+    """Class handling all manipulations for a specific question resource"""
+
     def get(self, meetup_id):
-        """Endpoint for geting all question records"""
+        """Endpoint for geting one question"""
         meetup = Meetups()
 
         try:
@@ -61,7 +65,7 @@ class AllQuestionsApi(Resource):
         if not meetup_available:
             return {"message": "You cannot post a question to an unavailable meetup", "status": 400}, 400
 
-        questions = question.get_all_questions()
-        if questions:
-            return {"status": 200, "data": questions, "message": "These are the available questions"}, 200
+        question1 = question.get_specific_question(question_id)
+        if question1:
+            return {"status": 200, "data": question1, "message": "This is the available question"}, 200
         return {"message": "No meetup found", "status": 404}, 404
