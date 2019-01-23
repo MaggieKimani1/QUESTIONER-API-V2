@@ -40,3 +40,11 @@ class AllMeetupsApi(Resource):
         if meetup_record:
             return {"status": 201, "data": meetup_record, "message": "Meetup posted sucessfully"}, 201
         return {"message": "Meetup failed to post"}, 400
+
+    def get(self):
+        """Endpoint for geting all meetup records"""
+
+        meetups = meetup.get_all_meetups()
+        if meetups:
+            return {"status": 200, "data": meetups, "message": "These are the available meetups"}, 200
+        return {"message": "No meetup found", "status": 404}, 404
