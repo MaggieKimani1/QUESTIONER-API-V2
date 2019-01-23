@@ -47,3 +47,21 @@ class AllQuestionsApi(Resource):
                                                 meetup, title, body, upvotes, downvotes)
 
         return {"data": new_question, "status": 400, "message": "Question posted successfully"}, 201
+
+    def get(self, meetup_id):
+        """Endpoint for geting all question records"""
+        meetup = Meetups()
+
+        try:
+            meetup_id = int(meetup_id)
+        except:
+            return{"message": "The id has to be an integer"}, 400
+        meetup_available = meetup.get_specific_meetup(meetup_id)
+
+        if not meetup_available:
+            return {"message": "You cannot post a question to an unavailable meetup", "status": 400}, 400
+
+        questions = question.get_all_questions()
+        if questions:
+            return {"status": 200, "data": questions, "message": "These are the available questions"}, 200
+        return {"message": "No meetup found", "status": 404}, 404
