@@ -27,3 +27,9 @@ class Questions():
         self.connection.commit()
 
         return {"message": "question added!"}
+
+    def get_all_questions(self):
+        """Get all meetups"""
+        self.cursor.execute("SELECT * FROM questions")
+        result = self.cursor.fetchall()
+        return result
