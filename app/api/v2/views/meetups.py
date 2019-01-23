@@ -65,3 +65,13 @@ class SingleMeetupApi(Resource):
         if meetup_available:
             return {"status": 200, "data": meetup_available, "message": "meetup retrieved"}, 200
         return {"message": "That meetup_id does not exist", "status": 404}, 404
+
+    def delete(self, meetup_id):
+        """Deleting a product"""
+        meetup1 = meetup.get_specific_meetup(meetup_id)
+        print(meetup1)
+        if meetup1:
+            deleted_meetup = meetup.delete_meetup(meetup_id)
+            print(deleted_meetup)
+            return {"message": "Meetup deleted successfully"}
+        return {"message": "The meetup you're trying to delete isn't available"}, 400

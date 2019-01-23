@@ -50,3 +50,10 @@ class Meetups():
             "SELECT * FROM meetups WHERE meetup_id = %s", (meetup_id,))
         result = self.cursor.fetchone()
         return result
+
+    def delete_meetup(self, meetup_id):
+        """Delete all meetups"""
+        self.cursor.execute(
+            "DELETE FROM meetups WHERE meetup_id = %s", (meetup_id,))
+
+        self.connection.commit()
