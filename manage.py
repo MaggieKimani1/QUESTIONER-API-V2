@@ -1,9 +1,9 @@
 import os
 import psycopg2
-from flask import Flask
+import datetime
 from instance.config import app_config
 from werkzeug.security import generate_password_hash
-
+from app.api.v2.utils.db_connection import connect
 
 environment = os.environ["APP_SETTINGS"]
 DATABASE_URL = app_config[environment].DATABASE_URL
@@ -12,13 +12,9 @@ DATABASE_URL = app_config[environment].DATABASE_URL
 class Database(object):
     """This Class has the setup for connecting to the database and creation of tables """
 
-    def connection(self):
-        """This method creates a connection to the class
-           param:connection
-           return:connection
-        """
-        conn = psycopg2.connect(DATABASE_URL)
-        return conn
+    def __init__(self, config_name):
+        self.conn = psycopg2.connect(app_config[config_name].DATABASE_URL)
+        self.cursor = self.conn.cursor()
 
     def createTables(self):
         """This method creates all tables if they dont exist
@@ -26,10 +22,6 @@ class Database(object):
                                         param2:queries
                                         param3:cursor
         """
-
-        conn = self.connection()
-        cur = conn.cursor()
-
         user_query = """CREATE TABLE if not EXISTS users(
 		id Serial PRIMARY KEY NOT NULL,
 		firstname varchar(40) NOT NULL,
@@ -58,8 +50,7 @@ class Database(object):
 		createdOn varchar NOT NULL,
 		location varchar(50) NOT NULL,
 		topic varchar(50) NOT NULL,
-		happeningOn varchar(300) NOT NULL,
-		tags varchar(50) NOT NULL
+		happeningOn varchar(300) NOT NULL
 		)"""
 
         rsvp_query = """CREATE TABLE if not EXISTS rsvps(
@@ -78,37 +69,37 @@ class Database(object):
         queries = [user_query, question_query,
                    meetup_query, rsvp_query, fix, alteration, email_alteration]
         for query in queries:
-            cur.execute(query)
+            self.cursor.execute(query)
 
-        conn.commit()
-        conn.close()
+        self.conn.commit()
 
-        # def create_admin(self):
-        #     """This method creates the default users
-        # 	   :param1:names.
-        #        :param2:email.
-        #        :param3:role.
-        #        :param4:password.
-        #     """
-        #     conn = self.connection()
-        #     cur = conn.cursor()
-        #     if not self.select_one_user("admin@quickwear.com"):
+    # def createAdmin(self):
+    #     conn = self.connection()
+    #     cur = conn.cursor()
+    #     if not self.select_one_user("myadmin@gmail.com"):
+    #         password = generate_password_hash('Admin1')
+    #         registered = datetime.datetime.now()
+    #         cur.execute("INSERT INTO users(firstname,lastname,email,password,phoneNumber,username,registered, isAdmin) VALUES( %s,%s,%s,%s,%s,%s,%s,%s)",
+    #                     ('maggie', 'kimani', 'myadmin@gmail.com', password, '+25470818079' 'admin', registered, 'True'))
+    #         conn.commit()
+    #         conn.close()
 
-        #         password = generate_password_hash('@Admin1')
-        #         cur.execute("INSERT INTO users(email,names,password,role) VALUES(%s,%s,%s,%s)",
-        #                     ('admin@quickwear.com', 'Sammy Njau', password, 'admin'))
-        #         conn.commit()
-        #         conn.close()
+    # def select_one_user(self, email):
+    #     """This method gets one user from the system
+    #     """
+    #     conn = self.connection()
+    #     cur = conn.cursor()
+    #     cur.execute("SELECT * FROM users where email =%s", (email,))
+    #     return cur.fetchone()
+
     def drop_tables(self):
         """Used to remove tables from database"""
-        conn = self.connection()
-        cur = conn.cursor()
         sql = [" DROP TABLE IF EXISTS questions CASCADE",
                " DROP TABLE IF EXISTS users CASCADE",
                " DROP TABLE IF EXISTS meetups CASCADE",
                " DROP TABLE IF EXISTS rsvps  CASCADE"
                ]
         for string in sql:
-            cur.execute(string)
-        conn.commit()
-        conn.close()
+            self.cursor.execute(string)
+        self.conn.commit()
+        self.conn.close()

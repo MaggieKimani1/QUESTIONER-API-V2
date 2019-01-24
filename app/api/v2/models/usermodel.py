@@ -1,7 +1,6 @@
 import datetime
-from manage import Database
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from app.api.v2.utils.db_connection import connect
 from psycopg2.extras import RealDictCursor
 import psycopg2
 from instance.config import app_config
@@ -23,34 +22,48 @@ class User():
         self.username = username
         self.registered = datetime.datetime.now()
         self.isAdmin = False
-        self.connection = psycopg2.connect(DATABASE_URL)
-        self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
+        # self.connection = psycopg2.connect(DATABASE_URL)
+        # self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
 
     def create_account(self):
         """ save a new user """
 
         password = generate_password_hash(self.password)
+        with connect() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
 
-        self.cursor.execute("INSERT INTO users (firstname, lastname, password, email, phoneNumber, username, registered, isAdmin) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
-                            (self.firstname, self.lastname, password, self.email, self.phoneNumber, self.username, self.registered, self.isAdmin))
-        self.connection.commit()
+                cursor.execute("INSERT INTO users (firstname, lastname, password, email, phoneNumber, username, registered, isAdmin) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
+                               (self.firstname, self.lastname, password, self.email, self.phoneNumber, self.username, self.registered, self.isAdmin))
 
     def get_user_by_email(self):
         """This method gets one user from the system """
-
-        self.cursor.execute(
-            "SELECT * FROM users where email =%s", (self.email,))
-        result = self.cursor.fetchone()
-        return result
+        with connect() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "SELECT * FROM users where email =%s", (self.email,))
+                result = cursor.fetchone()
+                return result
 
     def verify_user(self):
         """Verify login details"""
-        self.cursor.execute(
-            "SELECT * FROM users where email =%s", (self.email,))
-        result = self.cursor.fetchone()
-        if not result:
-            return "user not found", 404
-        valid_login = check_password_hash(result["password"], self.password)
-        if not valid_login:
-            return "Wrong password", 404
-        return result
+        with connect() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "SELECT * FROM users where email =%s", (self.email,))
+                result = cursor.fetchone()
+                if not result:
+                    return "user not found", 404
+                valid_login = check_password_hash(
+                    result["password"], self.password)
+                if not valid_login:
+                    return "Wrong password", 404
+                return result
+
+    def get_user_by_id(self, id):
+        """getting one user by their id"""
+        with connect() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "SELECT * FROM users WHERE id = %s", (id,))
+                result = cursor.fetchone()
+                return result

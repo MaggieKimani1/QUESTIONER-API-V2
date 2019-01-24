@@ -3,6 +3,7 @@ from flask_restful import Resource
 from app.api.v2.models.meetupmodel import Meetups
 from flask_expects_json import expects_json
 from app.api.v2.utils.json_schema import meetup_schema
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 meetup = Meetups()
 
@@ -11,6 +12,7 @@ class MeetupsEndpoints(Resource):
     """Endpoint for all meetups functionality"""
 
     @expects_json(meetup_schema)
+    @jwt_required
     def post(self):
         """This endpoint creates a meetup record"""
         data = request.get_json()
@@ -21,7 +23,6 @@ class MeetupsEndpoints(Resource):
         location = data["location"]
         topic = data["topic"]
         happeningOn = data["happeningOn"]
-        tags = data["tags"]
 
         if not location or location.isspace():
             return {"message": "location must be provided", "status": 400}, 400
@@ -29,14 +30,12 @@ class MeetupsEndpoints(Resource):
             return {"message": "topic must be provided", "status": 400}, 400
         if not happeningOn or happeningOn.isspace():
             return {"message": "happeningOn must be provided", "status": 400}, 400
-        if not tags:
-            return {"message": "tags must be provided", "status": 400}, 400
 
         if meetup.check_meetup(topic):
             return {"message": "meetup already exists", "status": 400}, 400
 
         meetup_record = meetup.create_meetup(
-            location, topic, happeningOn, tags)
+            location, topic, happeningOn)
         if meetup_record:
             return {"status": 201, "data": meetup_record, "message": "Meetup posted sucessfully"}, 201
         return {"message": "Meetup failed to post"}, 400
@@ -66,6 +65,7 @@ class MeetupEndpoint(Resource):
             return {"status": 200, "data": meetup_available, "message": "meetup retrieved"}, 200
         return {"message": "That meetup_id does not exist", "status": 404}, 404
 
+    @jwt_required
     def delete(self, meetup_id):
         """Deleting a product"""
         meetup1 = meetup.get_specific_meetup(meetup_id)

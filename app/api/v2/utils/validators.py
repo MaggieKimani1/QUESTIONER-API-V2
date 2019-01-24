@@ -28,3 +28,6 @@ class Validations():
         if re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email, re.IGNORECASE):
             return True
         return False
+
+    def validate_whitespace(self):
+        """Validates for whitespaces in data"""

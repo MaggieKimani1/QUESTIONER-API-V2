@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token, jwt_required
 from flask_expects_json import expects_json
 from app.api.v2.utils.json_schema import signup_schema, login_schema
 from app.api.v2.utils.validators import Validations
+from werkzeug.security import check_password_hash
 
 validator = Validations()
 
@@ -25,10 +26,15 @@ class Registration(Resource):
         email = data["email"].lower()
         phoneNumber = data["phoneNumber"]
 
+        user_details = [firstname, lastname, username, phoneNumber]
+        for item in user_details:
+            if ' ' in item:
+                return {"Cannot have whitespaces"}
+
         if not validator.validate_email(email):
             return {"message": "Please enter a valid email"}
         if not validator.validate_password(password):
-            return{"message": "Please enter a valid password"}
+            return{"message": "Password should be atleast 6characters long, have an uppercase and lowercase letter, a special character and a number"}
         if not firstname or firstname.isspace():
             return {"message": "firstname must be provided", "status": 400}, 400
         if not lastname or lastname.isspace():
@@ -45,7 +51,7 @@ class Registration(Resource):
         user1 = User(firstname, lastname, password,
                      email, phoneNumber, username)
         if user1.get_user_by_email():
-            return {"message": "Email already exists"}
+            return {"message": "Email already exists"}, 400
         user1.create_account()
         added_user = {"firstname": firstname, "lastname": lastname,
                       "email": email, "phoneNumber": phoneNumber, "username": username}

@@ -1,11 +1,13 @@
 import datetime
-from manage import Database
+from app.api.v2.utils.db_connection import connect
 from psycopg2.extras import RealDictCursor
 from instance.config import app_config
+# from manage import Database
 import psycopg2
 import os
 
-db = Database()
+
+# db = Database()
 environment = os.environ["APP_SETTINGS"]
 DATABASE_URL = app_config[environment].DATABASE_URL
 
@@ -13,47 +15,49 @@ DATABASE_URL = app_config[environment].DATABASE_URL
 class Meetups():
     """This class holds data for all meetups"""
 
-    def __init__(self):
-        self.connection = psycopg2.connect(DATABASE_URL)
-        self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
-
-    def create_meetup(self, location=None, topic=None, happeningOn=None, tags=None):
+    def create_meetup(self, location=None, topic=None, happeningOn=None):
         """Model for posting a meetup"""
         createdOn = datetime.datetime.now().strftime("%y-%m-%d-%H-%M")
+        with connect() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
 
-        self.cursor.execute("INSERT INTO meetups (createdOn, location, topic, happeningOn, tags) VALUES(%s,%s,%s,%s,%s)",
-                            (createdOn, location, topic, happeningOn, tags))
+                cursor.execute("INSERT INTO meetups (createdOn, location, topic, happeningOn) VALUES(%s,%s,%s,%s)",
+                               (createdOn, location, topic, happeningOn))
 
-        self.connection.commit()
-
-        return {"message": "meetup added!"}
+                return {"message": "meetup added!"}
 
     def check_meetup(self, topic):
         '''Get meetup by topic'''
         try:
-            self.cursor.execute(
-                "SELECT * FROM meetups WHERE topic = %s", (topic,))
-            result = self.cursor.fetchone()
-            return result
+            with connect() as connection:
+                with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                    cursor.execute(
+                        "SELECT * FROM meetups WHERE topic = %s", (topic,))
+                    result = cursor.fetchone()
+                    return result
         except:
             pass
 
     def get_all_meetups(self):
         """Get all meetups"""
-        self.cursor.execute("SELECT * FROM meetups")
-        result = self.cursor.fetchall()
-        return result
+        with connect() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute("SELECT * FROM meetups")
+                result = cursor.fetchall()
+                return result
 
     def get_specific_meetup(self, meetup_id):
         """Get meetup by meetup_id"""
-        self.cursor.execute(
-            "SELECT * FROM meetups WHERE meetup_id = %s", (meetup_id,))
-        result = self.cursor.fetchone()
-        return result
+        with connect() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "SELECT * FROM meetups WHERE meetup_id = %s", (meetup_id,))
+                result = cursor.fetchone()
+                return result
 
     def delete_meetup(self, meetup_id):
         """Delete all meetups"""
-        self.cursor.execute(
-            "DELETE FROM meetups WHERE meetup_id = %s", (meetup_id,))
-
-        self.connection.commit()
+        with connect() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(
+                    "DELETE FROM meetups WHERE meetup_id = %s", (meetup_id,))
