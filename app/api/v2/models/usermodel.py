@@ -22,8 +22,6 @@ class User():
         self.username = username
         self.registered = datetime.datetime.now()
         self.isAdmin = False
-        # self.connection = psycopg2.connect(DATABASE_URL)
-        # self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
 
     def create_account(self):
         """ save a new user """
@@ -35,12 +33,12 @@ class User():
                 cursor.execute("INSERT INTO users (firstname, lastname, password, email, phoneNumber, username, registered, isAdmin) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
                                (self.firstname, self.lastname, password, self.email, self.phoneNumber, self.username, self.registered, self.isAdmin))
 
-    def get_user_by_email(self):
+    def get_user_by_email(self, email):
         """This method gets one user from the system """
         with connect() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
                 cursor.execute(
-                    "SELECT * FROM users where email =%s", (self.email,))
+                    "SELECT * FROM users WHERE email =%s", (email,))
                 result = cursor.fetchone()
                 return result
 
@@ -64,6 +62,6 @@ class User():
         with connect() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
                 cursor.execute(
-                    "SELECT * FROM users WHERE id = %s", (id,))
+                    "SELECT * FROM users WHERE id = %d", (id,))
                 result = cursor.fetchone()
                 return result

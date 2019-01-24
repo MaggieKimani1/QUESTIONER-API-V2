@@ -28,7 +28,7 @@ meetup_schema = {
         "happeningOn": {type: "string"},
         "tags": {type: "string"},
     },
-    "required": ["location", "topic", "happeningOn", "tags"]
+    "required": ["location", "topic", "happeningOn"]
 }
 
 question_schema = {

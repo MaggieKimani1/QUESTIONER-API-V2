@@ -13,6 +13,7 @@ api_v2.add_resource(MeetupsEndpoints, '/meetups', '/meetups/upcoming')
 api_v2.add_resource(MeetupEndpoint, '/meetups/<meetup_id>',
                     '/meetups/<id>/rsvps')
 api_v2.add_resource(QuestionsEndpoint, '/meetups/<meetup_id>/questions')
-# api_v1.add_resource(SingleQuestion, '/questions/<question_id>')
+api_v2.add_resource(
+    QuestionEndpoint, '/meetups/<meetup_id>/questions/<question_id>')
 api_v2.add_resource(Registration, '/auth/signup')
 api_v2.add_resource(Login, '/auth/login')

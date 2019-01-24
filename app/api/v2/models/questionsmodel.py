@@ -24,16 +24,18 @@ class Questions():
         with connect() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
 
-                cursor.execute("INSERT INTO questions (createdOn, createdBy, meetup, title, body, upvotes, downvotes) VALUES(%s,%s,%s,%s,%s,%s,%s)",
+                cursor.execute("INSERT INTO questions (createdOn, createdBy, meetup, title, body, upvotes, downvotes) VALUES(%s,%s,%s,%s,%s,%s,%s) RETURNING question_id, meetup, createdOn, createdBy",
                                (createdOn, createdBy, meetup, title, body, upvotes, downvotes))
+                question_created = cursor.fetchone()
 
-                return {"message": "question added!"}
+                return question_created
 
-    def get_all_questions(self):
+    def get_all_questions(self, meetup_id):
         """Get all questions"""
         with connect() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute("SELECT * FROM questions")
+                cursor.execute(
+                    "SELECT * FROM questions WHERE meetup_id = %s", (meetup_id,))
                 result = cursor.fetchall()
                 return result
 
@@ -44,4 +46,5 @@ class Questions():
                 cursor.execute(
                     "SELECT * FROM questions WHERE question_id=%s", (question_id,))
                 result = cursor.fetchone()
+                print('Hello')
                 return result

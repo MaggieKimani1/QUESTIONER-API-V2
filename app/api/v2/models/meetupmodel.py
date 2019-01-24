@@ -21,10 +21,10 @@ class Meetups():
         with connect() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
 
-                cursor.execute("INSERT INTO meetups (createdOn, location, topic, happeningOn) VALUES(%s,%s,%s,%s)",
-                               (createdOn, location, topic, happeningOn))
+                result = cursor.execute("INSERT INTO meetups (createdOn, location, topic, happeningOn) VALUES(%s,%s,%s,%s)",
+                                        (createdOn, location, topic, happeningOn))
 
-                return {"message": "meetup added!"}
+                return cursor.fetchone(result)
 
     def check_meetup(self, topic):
         '''Get meetup by topic'''
