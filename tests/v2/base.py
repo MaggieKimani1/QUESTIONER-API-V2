@@ -5,7 +5,6 @@ from app import create_app
 from instance.config import app_config
 from manage import Database
 import datetime
-db = Database()
 
 
 class TestBase(unittest.TestCase):
@@ -14,6 +13,7 @@ class TestBase(unittest.TestCase):
     def setUp(self):
         """The setUp method is the method that initialize the variables to be used by the test methods"""
         self.app = create_app(config_name="development")
+        self.db = Database("testing")
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
@@ -72,5 +72,5 @@ class TestBase(unittest.TestCase):
 
     def tearDown(self):
         '''Method to clear all tables before another test is undertaken'''
-        db.drop_tables()
+        self.db.drop_tables()
         self.app_context.pop()
