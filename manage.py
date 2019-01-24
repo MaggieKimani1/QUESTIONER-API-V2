@@ -4,6 +4,10 @@ import datetime
 from instance.config import app_config
 from werkzeug.security import generate_password_hash
 from app.api.v2.utils.db_connection import connect
+from psycopg2.extras import RealDictCursor
+from app.api.v2.models.usermodel import User
+
+user1 = User()
 
 environment = os.environ["APP_SETTINGS"]
 DATABASE_URL = app_config[environment].DATABASE_URL
@@ -72,32 +76,24 @@ class Database(object):
             self.cursor.execute(query)
 
         self.conn.commit()
+        self.conn.close()
 
-    # def createAdmin(self):
-    #     conn = self.connection()
-    #     cur = conn.cursor()
-    #     if not self.select_one_user("myadmin@gmail.com"):
-    #         password = generate_password_hash('Admin1')
-    #         registered = datetime.datetime.now()
-    #         cur.execute("INSERT INTO users(firstname,lastname,email,password,phoneNumber,username,registered, isAdmin) VALUES( %s,%s,%s,%s,%s,%s,%s,%s)",
-    #                     ('maggie', 'kimani', 'myadmin@gmail.com', password, '+25470818079' 'admin', registered, 'True'))
-    #         conn.commit()
-    #         conn.close()
+    def createAdmin(self):
+        with connect() as connection:
+            with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+                if not user1.get_user_by_email(email='myadmin@gmail.com'):
 
-    # def select_one_user(self, email):
-    #     """This method gets one user from the system
-    #     """
-    #     conn = self.connection()
-    #     cur = conn.cursor()
-    #     cur.execute("SELECT * FROM users where email =%s", (email,))
-    #     return cur.fetchone()
+                    password = generate_password_hash('Admin1')
+                    registered = datetime.datetime.now()
+                    cursor.execute("INSERT INTO users(firstname,lastname,email,password,phoneNumber,username,registered, isAdmin) VALUES( %s,%s,%s,%s,%s,%s,%s,%s)", (
+                        'maggie', 'kimani', 'myadmin@gmail.com', password, '+25470818079', 'admin', registered, 'True'))
 
     def drop_tables(self):
         """Used to remove tables from database"""
-        sql = [" DROP TABLE IF EXISTS questions CASCADE",
-               " DROP TABLE IF EXISTS users CASCADE",
-               " DROP TABLE IF EXISTS meetups CASCADE",
-               " DROP TABLE IF EXISTS rsvps  CASCADE"
+        sql = [" DROP TABLE IF EXISTS questions CASCADE;",
+               " DROP TABLE IF EXISTS users CASCADE;",
+               " DROP TABLE IF EXISTS meetups CASCADE;",
+               " DROP TABLE IF EXISTS rsvps  CASCADE;"
                ]
         for string in sql:
             self.cursor.execute(string)

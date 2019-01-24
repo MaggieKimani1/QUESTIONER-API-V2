@@ -15,6 +15,10 @@ class MeetupsEndpoints(Resource):
     @jwt_required
     def post(self):
         """This endpoint creates a meetup record"""
+
+        # current_user = get_jwt_identity()
+        # if current_user == "myadmin@gmail.com":
+
         data = request.get_json()
 
         if not data:
@@ -34,11 +38,12 @@ class MeetupsEndpoints(Resource):
         if meetup.check_meetup(topic):
             return {"message": "meetup already exists", "status": 400}, 400
 
-        meetup_record = meetup.create_meetup(
-            location, topic, happeningOn)
+        meetup_record = meetup.create_meetup()
+
         if meetup_record:
             return {"status": 201, "data": meetup_record, "message": "Meetup posted sucessfully"}, 201
         return {"message": "Meetup failed to post"}, 400
+        # return {"message": "This service is only available for the admin"}, 400
 
     def get(self):
         """Endpoint for geting all meetup records"""
@@ -51,7 +56,7 @@ class MeetupsEndpoints(Resource):
 
 class MeetupEndpoint(Resource):
     '''Endpoint for single meetup functionality'''
-
+    @jwt_required
     def get(self, meetup_id):
         '''Fetching a single meetup'''
         try:

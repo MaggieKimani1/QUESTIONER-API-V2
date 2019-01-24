@@ -26,10 +26,10 @@ class Registration(Resource):
         email = data["email"].lower()
         phoneNumber = data["phoneNumber"]
 
-        user_details = [firstname, lastname, username, phoneNumber]
-        for item in user_details:
-            if ' ' in item:
-                return {"Cannot have whitespaces"}
+        # user_details = [firstname, lastname, username, phoneNumber]
+        # for item in user_details:
+        #     if ' ' in item:
+        #         return {"Cannot have whitespaces"}
 
         if not validator.validate_email(email):
             return {"message": "Please enter a valid email"}
@@ -41,17 +41,13 @@ class Registration(Resource):
             return {"message": "lastname must be provided", "status": 400}, 400
         if not username or username.isspace():
             return {"message": "username must be provided", "status": 400}, 400
-        if not password or password.isspace():
-            return {"message": "password must be provided", "status": 400}, 400
-        if not email or email.isspace():
-            return {"message": "email must be provided", "status": 400}, 400
         if not phoneNumber or phoneNumber.isspace():
             return {"message": "tags must be provided", "status": 400}, 400
 
         user1 = User(firstname, lastname, password,
                      email, phoneNumber, username)
         if user1.get_user_by_email():
-            return {"message": "Email already exists"}, 400
+            return {"message": "Email already exists"}, 409
         user1.create_account()
         added_user = {"firstname": firstname, "lastname": lastname,
                       "email": email, "phoneNumber": phoneNumber, "username": username}
@@ -75,10 +71,9 @@ class Login(Resource):
         if not password or password.isspace():
             return {"message": "password must be provided", "status": 400}, 400
         user = User(email=email, password=password)
-
-        if not user.verify_user():
-            return ({"message": "wrong email or password", "status": 401}), 401
         logged_user = user.verify_user()
+        if not logged_user:
+            return ({"message": "wrong email or password", "status": 401}), 401
 
         token = create_access_token(identity=logged_user["email"])
         return {"message": "{} successfully logged in".format(logged_user["username"]), "token": token, "status": 201}, 201
