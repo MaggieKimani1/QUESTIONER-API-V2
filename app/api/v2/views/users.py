@@ -44,11 +44,11 @@ class Registration(Resource):
         if not phoneNumber or phoneNumber.isspace():
             return {"message": "tags must be provided", "status": 400}, 400
 
-        user1 = User(firstname, lastname, password,
-                     email, phoneNumber, username)
-        if user1.get_user_by_email():
+        print(User.get_user_by_email(self, email))
+        if User.get_user_by_email(self, email):
             return {"message": "Email already exists"}, 409
-        user1.create_account()
+        User(firstname, lastname, password, email,
+             username, phoneNumber).create_account()
         added_user = {"firstname": firstname, "lastname": lastname,
                       "email": email, "phoneNumber": phoneNumber, "username": username}
         return{"status": 201, "data": added_user, "message": "user created"}, 201
@@ -70,10 +70,13 @@ class Login(Resource):
             return {"message": "email must be provided", "status": 400}, 400
         if not password or password.isspace():
             return {"message": "password must be provided", "status": 400}, 400
-        user = User(email=email, password=password)
-        logged_user = user.verify_user()
-        if not logged_user:
-            return ({"message": "wrong email or password", "status": 401}), 401
+        user = User.get_user_by_email(self, email)
+        print(user['password'])
+        if not user:
+            return {"message": "Invalid email", "status": 401}, 401
 
-        token = create_access_token(identity=logged_user["email"])
-        return {"message": "{} successfully logged in".format(logged_user["username"]), "token": token, "status": 201}, 201
+        if not check_password_hash(user['password'], password):
+            return {"message": "Invalid password"}, 401
+
+        token = create_access_token(identity=user["email"])
+        return {"message": "{} successfully logged in".format(user["username"]), "token": token, "status": 201}, 201

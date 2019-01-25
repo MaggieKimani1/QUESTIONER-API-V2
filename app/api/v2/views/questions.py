@@ -14,7 +14,7 @@ class QuestionsEndpoint(Resource):
     '''Endpoint for all questions functionality'''
 
     @expects_json(question_schema)
-    @jwt_required
+    # @jwt_required
     def post(self, meetup_id):
         """Endpoint for posting a question for a specific meetup"""
         meetup = Meetups()

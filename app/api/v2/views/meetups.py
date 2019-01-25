@@ -12,7 +12,7 @@ class MeetupsEndpoints(Resource):
     """Endpoint for all meetups functionality"""
 
     @expects_json(meetup_schema)
-    @jwt_required
+    # @jwt_required
     def post(self):
         """This endpoint creates a meetup record"""
 
@@ -38,7 +38,7 @@ class MeetupsEndpoints(Resource):
         if meetup.check_meetup(topic):
             return {"message": "meetup already exists", "status": 400}, 400
 
-        meetup_record = meetup.create_meetup()
+        meetup_record = meetup.create_meetup(location, topic, happeningOn)
 
         if meetup_record:
             return {"status": 201, "data": meetup_record, "message": "Meetup posted sucessfully"}, 201

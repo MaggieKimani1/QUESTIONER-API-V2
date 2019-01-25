@@ -6,17 +6,12 @@ import psycopg2
 import os
 import datetime
 
-# db = Database()
 environment = os.environ["APP_SETTINGS"]
 DATABASE_URL = app_config[environment].DATABASE_URL
 
 
 class Questions():
     """This class holds data for all questions"""
-
-    # def __init__(self):
-    #     self.connection = psycopg2.connect(DATABASE_URL)
-    #     self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
 
     def create_question(self, createdBy=None, meetup=None, title=None, body=None, upvotes=None, downvotes=None):
         """Model for posting a question"""
