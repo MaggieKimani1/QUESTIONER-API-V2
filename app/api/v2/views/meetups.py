@@ -75,6 +75,6 @@ class MeetupEndpoint(Resource):
         """Deleting a product"""
         meetup1 = meetup.get_specific_meetup(meetup_id)
         if meetup1:
-            deleted_meetup = meetup.delete_meetup(meetup_id)
+            meetup.delete_meetup(meetup_id)
             return {"message": "Meetup deleted successfully"}
         return {"message": "The meetup you're trying to delete isn't available"}, 400
