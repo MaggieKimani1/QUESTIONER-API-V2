@@ -38,7 +38,7 @@ class User():
         with connect() as connection:
             with connection.cursor(cursor_factory=RealDictCursor) as cursor:
                 cursor.execute(
-                    "SELECT * FROM users WHERE email =%s", (email,))
+                    "SELECT * FROM users WHERE email =%s;", (email,))
                 result = cursor.fetchone()
                 return result
 

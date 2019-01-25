@@ -41,3 +41,11 @@ question_schema = {
     },
     "required": ["title", "body", "upvotes", "downvotes"]
 }
+rsvp_schema = {
+    "type": "object",
+    "properties": {
+        "meetup": {type: "integer"},
+        "response": {type: "string"},
+    },
+    "required": ["response"]
+}
