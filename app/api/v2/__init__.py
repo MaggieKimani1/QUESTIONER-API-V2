@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask_restful import Api
 from app.api.v2.views.meetups import MeetupsEndpoints, MeetupEndpoint
 from app.api.v2.views.questions import QuestionsEndpoint, QuestionEndpoint
+from app.api.v2.views.comments import CommentsEndpoint
 from app.api.v2.views.users import Registration, Login
 from app.api.v2.views.rsvps import RSVPEndpoint
 
@@ -19,3 +20,5 @@ api_v2.add_resource(
 api_v2.add_resource(Registration, '/auth/signup')
 api_v2.add_resource(Login, '/auth/login')
 api_v2.add_resource(RSVPEndpoint, '/meetups/<int:meetup_id>/rsvp')
+api_v2.add_resource(
+    CommentsEndpoint, '/meetups/<int:meetup_id>/questions/<int:question_id>/comments')

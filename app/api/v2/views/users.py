@@ -34,7 +34,7 @@ class Registration(Resource):
         if not validator.validate_email(email):
             return {"message": "Please enter a valid email"}
         if not validator.validate_password(password):
-            return{"message": "Password should be atleast 6characters long, have an uppercase and lowercase letter, a special character and a number"}
+            return{"message": "Password should be atleast 6characters long, have an uppercase and lowercase letter, a special character and a number"}, 400
         if not firstname or firstname.isspace():
             return {"message": "firstname must be provided", "status": 400}, 400
         if not lastname or lastname.isspace():
@@ -44,14 +44,13 @@ class Registration(Resource):
         if not phoneNumber or phoneNumber.isspace():
             return {"message": "tags must be provided", "status": 400}, 400
 
-        print(User.get_user_by_email(self, email))
         if User.get_user_by_email(self, email):
             return {"message": "Email already exists"}, 409
         User(firstname, lastname, password, email,
-             username, phoneNumber).create_account()
+             phoneNumber, username).create_account()
         added_user = {"firstname": firstname, "lastname": lastname,
                       "email": email, "phoneNumber": phoneNumber, "username": username}
-        return{"status": 201, "data": added_user, "message": "user created"}, 201
+        return {"status": 201, "data": added_user, "message": "user created"}, 201
 
 
 class Login(Resource):
@@ -71,7 +70,6 @@ class Login(Resource):
         if not password or password.isspace():
             return {"message": "password must be provided", "status": 400}, 400
         user = User.get_user_by_email(self, email)
-        print(user['password'])
         if not user:
             return {"message": "Invalid email", "status": 401}, 401
 
@@ -79,4 +77,4 @@ class Login(Resource):
             return {"message": "Invalid password"}, 401
 
         token = create_access_token(identity=user["email"])
-        return {"message": "{} successfully logged in".format(user["username"]), "token": token, "status": 201}, 201
+        return {"message": "{} successfully logged in".format(user["username"]), "token": token, "status": 200}, 200
