@@ -1,9 +1,9 @@
+import os
+from flask_jwt_extended import JWTManager
+from manage import Database
 from flask import Flask, Blueprint
 from flask_restful import Api
 from instance.config import app_config
-from manage import Database
-from flask_jwt_extended import JWTManager
-import os
 
 
 def create_app(config_name='development'):

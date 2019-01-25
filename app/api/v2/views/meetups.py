@@ -12,7 +12,7 @@ class MeetupsEndpoints(Resource):
     """Endpoint for all meetups functionality"""
 
     @expects_json(meetup_schema)
-    # @jwt_required
+    @jwt_required
     def post(self):
         """This endpoint creates a meetup record"""
 
@@ -74,9 +74,7 @@ class MeetupEndpoint(Resource):
     def delete(self, meetup_id):
         """Deleting a product"""
         meetup1 = meetup.get_specific_meetup(meetup_id)
-        print(meetup1)
         if meetup1:
             deleted_meetup = meetup.delete_meetup(meetup_id)
-            print(deleted_meetup)
             return {"message": "Meetup deleted successfully"}
         return {"message": "The meetup you're trying to delete isn't available"}, 400

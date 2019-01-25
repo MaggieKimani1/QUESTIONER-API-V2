@@ -41,5 +41,4 @@ class Questions():
                 cursor.execute(
                     "SELECT * FROM questions WHERE question_id=%s", (question_id,))
                 result = cursor.fetchone()
-                print('Hello')
                 return result

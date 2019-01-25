@@ -12,8 +12,9 @@ class TestBase(unittest.TestCase):
 
     def setUp(self):
         """The setUp method is the method that initialize the variables to be used by the test methods"""
-        self.app = create_app(config_name="development")
+        self.app = create_app(config_name="testing")
         self.db = Database("testing")
+        self.db.createTables()
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
@@ -23,8 +24,8 @@ class TestBase(unittest.TestCase):
             "firstname": "Maggie",
             "lastname": "Kimani",
             "email": "Maggiekim42@gmail.com",
-            "password": "Nyambura",
-            "confirm_password": "Nyambura",
+            "password": "Nyamb5!@",
+            "confirm_password": "Nyamb5!@",
             "phoneNumber": "0708818079",
             "username": "maggiekimani1",
             "registered": datetime.datetime.now().strftime("%y-%m-%d-%H-%M"),
@@ -66,8 +67,15 @@ class TestBase(unittest.TestCase):
         }
         self.login_user = {
             "email": "Maggiekim42@gmail.com",
-            "password": "Nyambura"
+            "password": "Nyamb5!@"
 
+        }
+        self.data = {
+            "id": 1,
+            "location": "kenya",
+            "topic": "Tech",
+            "happeningOn": "2/3/2018",
+            "tags": "immigration"
         }
 
     def tearDown(self):

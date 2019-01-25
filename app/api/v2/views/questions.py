@@ -77,7 +77,6 @@ class QuestionEndpoint(Resource):
             return {"message": "You cannot get a question to an unavailable meetup", "status": 400}, 400
 
         question1 = question.get_specific_question(question_id)
-        print(question1)
         if question1:
             return {"status": 200, "data": question1, "message": "This is the available question"}, 200
         else:

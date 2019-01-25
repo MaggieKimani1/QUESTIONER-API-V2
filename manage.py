@@ -64,6 +64,14 @@ class Database(object):
 		response varchar(50) NOT NULL
 		)"""
 
+        comments_query = """CREATE TABLE if not EXISTS comments(
+		comments_id Serial PRIMARY KEY NOT NULL,
+		user_id int REFERENCES users(id) on DELETE CASCADE,
+		question_id int REFERENCES questions(question_id) on DELETE CASCADE,
+		body varchar(500) NOT NULL,
+		createdOn varchar(50) NOT NULL
+		)"""
+
         fix = """CREATE EXTENSION IF NOT EXISTS citext;"""
 
         alteration = """ALTER TABLE users ALTER COLUMN username TYPE citext;"""
@@ -71,12 +79,12 @@ class Database(object):
         email_alteration = """ALTER TABLE users ALTER COLUMN email TYPE citext;"""
 
         queries = [user_query, question_query,
-                   meetup_query, rsvp_query, fix, alteration, email_alteration]
+                   meetup_query, rsvp_query, comments_query, fix, alteration, email_alteration]
         for query in queries:
             self.cursor.execute(query)
 
         self.conn.commit()
-        self.conn.close()
+        # self.conn.close()
 
     def createAdmin(self):
         with connect() as connection:
@@ -93,7 +101,8 @@ class Database(object):
         sql = [" DROP TABLE IF EXISTS questions CASCADE;",
                " DROP TABLE IF EXISTS users CASCADE;",
                " DROP TABLE IF EXISTS meetups CASCADE;",
-               " DROP TABLE IF EXISTS rsvps  CASCADE;"
+               " DROP TABLE IF EXISTS rsvps  CASCADE;",
+               " DROP TABLE IF EXISTS comments;"
                ]
         for string in sql:
             self.cursor.execute(string)
